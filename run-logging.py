@@ -13,19 +13,24 @@ import getopt
 import datetime
 import subprocess
 
-def usage():
-    print("does not write usage.", file=sys.stderr)
+def usage(f=sys.stdout):
+    print("""usage:
+    %s [-d logdir] [-s] command [args...]
+
+ -d logdir       the directory where this create log file.
+ -s              command is script. This appends first argument to log filename.
+ """ % sys.argv[0], file=f)
 
 def die(msg):
     print("%s: %s" % (os.path.basename(sys.argv[0]), msg), file=sys.stderr)
-    usage()
+    usage(sys.stderr)
     sys.exit(1)
 
 def main():
     isscript = False
     logdir   = "."
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:s", [])
+        opts, args = getopt.getopt(sys.argv[1:], "d:sh", [])
     except getopt.GetoptError as err:
         die(str(err))
 
@@ -34,6 +39,9 @@ def main():
             logdir = a
         elif o == '-s':
             isscript = True
+        elif o == '-h':
+            usage()
+            sys.exit(0)
         else:
             assert False, "unhandled option"
 
